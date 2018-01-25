@@ -83,13 +83,13 @@ func main() {
   // Use type assertions to ensure that the value is a JSON object
   switch jsonItems := v.(type) {
 
-  		// The value is an configItem, represented as a generic interface
-  		case interface{}:
+      // The value is an configItem, represented as a generic interface
+      case interface{}:
 
         // Create a new ConfigItem which will hold the details for this secret
-  			var configItem ConfigItem
+        var configItem ConfigItem
 
-  			// Access the values in the JSON object and ensure they are of the right structure
+        // Access the values in the JSON object and ensure they are of the right structure
         var configItemArray map[string]interface{}
         configItemArray, ok = jsonItems.(map[string]interface{})
         if(!ok) {
@@ -97,32 +97,32 @@ func main() {
         }
 
         // Iterate over each key/value within the config item
-  			for itemKey, itemValue := range configItemArray {
-        	switch itemKey {
+        for itemKey, itemValue := range configItemArray {
+          switch itemKey {
             case "vault_path":
 
-    					// Make sure is a string
-    					switch itemValue := itemValue.(type) {
-      					case string:
-      						configItem.SecretPath = itemValue
-      					default:
-      						log.Fatal("SECRET_CONFIG item 'vault_path' should be a string")
-    					}
-    				case "ttl":
+              // Make sure is a string
+              switch itemValue := itemValue.(type) {
+                case string:
+                  configItem.SecretPath = itemValue
+                default:
+                  log.Fatal("SECRET_CONFIG item 'vault_path' should be a string")
+              }
+            case "ttl":
 
-    					// Make sure that TTL is a number; all numbers are transformed to float64
-    					switch itemValue := itemValue.(type) {
+              // Make sure that TTL is a number; all numbers are transformed to float64
+              switch itemValue := itemValue.(type) {
               case float64:
-      						configItem.TTL = int(itemValue)
-      					default:
-      						log.Fatal("SECRET_CONFIG item 'ttl' should be a integer")
-      				}
+                  configItem.TTL = int(itemValue)
+                default:
+                  log.Fatal("SECRET_CONFIG item 'ttl' should be a integer")
+              }
             case "set":
 
-    					// Make sure that "set" is an interface{} (JSON object)"
-    				  switch setObj := itemValue.(type) {
+              // Make sure that "set" is an interface{} (JSON object)"
+              switch setObj := itemValue.(type) {
 
-      					case interface{}:
+                case interface{}:
 
                   // Ensure that the set value has the correct type
                   var setObjArray map[string]interface{}
@@ -159,19 +159,19 @@ func main() {
                         fmt.Println("Incorrect type for '", envVar, "' expected string")
                     }
                   }
-      					default:
-      						log.Fatal("SECRET_CONFIG structure invalid")
-    					}
+                default:
+                  log.Fatal("SECRET_CONFIG structure invalid")
+              }
             default:
               // Ignore any extra fields that we don't care about
-  				}
-  			}
+          }
+        }
         secretConfig.ConfigItems = append(secretConfig.ConfigItems, configItem)
 
       // Not a JSON object; handle the error
-  		default:
-  			log.Fatal("SECRET_CONFIG structure invalid")
-  	}
+      default:
+        log.Fatal("SECRET_CONFIG structure invalid")
+    }
   }
 
   log.Debug("secretConfig", secretConfig)
