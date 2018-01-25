@@ -27,7 +27,7 @@ docker run \
 	--rm \
 	-e VAULT_ADDR="https://vault.my-domain.com:8200" \
 	-e VAULT_TOKEN="<token>" \
-	-e SECRET_CONFIG="<configuration (see below)>"
+	-e SECRET_CONFIG="<configuration (see below)>" \
 	readytalk/vault-to-envs:latest
 ```
 
@@ -64,7 +64,7 @@ Take an example where we have two secrets.  The first contains 3 keys with datab
 ```json
 [
 	{
-		"vaultPath": "secret/app/database",
+		"vault_path": "secret/app/database",
 		"set": {
 			"DB_HOST": "dbHost",
 			"DB_USER": "dbUser",
@@ -72,7 +72,7 @@ Take an example where we have two secrets.  The first contains 3 keys with datab
 		}
 	},
 	{
-		"vaultPath": "secret/app/token",
+		"vault_path": "secret/app/token",
 		"set":  {
 			"APP_TOKEN": "token"
 		}
@@ -86,7 +86,7 @@ docker run \
 	--rm \
 	-e VAULT_ADDR="https://vault.my-domain.com:8200" \
 	-e VAULT_TOKEN="<token>" \
-	-e SECRET_CONFIG="$(cat secret_config.json)"
+	-e SECRET_CONFIG="$(cat secret_config.json)" \
 	readytalk/vault-to-envs:latest
 ```
 
@@ -105,7 +105,7 @@ This example uses [Vault's AWS Secret Backend](https://www.vaultproject.io/docs/
 ```json
 [
 	{
-		"vaultPath": "aws/creds/my-role",
+		"vault_path": "aws/creds/my-role",
 		"ttl": 600,
 		"set": {
 		  "AWS_ACCESS_KEY_ID": "access_key",
@@ -121,7 +121,7 @@ docker run \
 	--rm \
 	-e VAULT_ADDR="https://vault.my-domain.com:8200" \
 	-e VAULT_TOKEN="<token>" \
-	-e SECRET_CONFIG="$(cat secret_config.json)"
+	-e SECRET_CONFIG="$(cat secret_config.json)" \
 	readytalk/vault-to-envs:latest
 ```
 
@@ -139,6 +139,6 @@ eval $(docker run \
 	--rm \
 	-e VAULT_ADDR="https://vault.my-domain.com:8200" \
 	-e VAULT_TOKEN="<token>" \
-	-e SECRET_CONFIG="<configuration (see below)>"
+	-e SECRET_CONFIG="<configuration (see below)>" \
 	readytalk/vault-to-envs)"
 ```
