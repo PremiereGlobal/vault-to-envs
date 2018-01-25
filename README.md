@@ -8,9 +8,9 @@ A Docker container for extracting Vault secrets into environment variables for u
 - [Basic Usage](#basic-usage)
 - [Docker Environment Variables](#docker-environment-variables)
 - [Configuration](#configuration)
-	- [Examples](#examples)
-		- [Simple Secrets](#simple-secrets)
-		- [Dynamic Secrets](#dynamic-secrets)
+  - [Examples](#examples)
+    - [Simple Secrets](#simple-secrets)
+    - [Dynamic Secrets](#dynamic-secrets)
 - [Sourcing the Env Vars](#sourcing-the-env-vars)
 
 <!-- /TOC -->
@@ -24,11 +24,11 @@ A Docker container for extracting Vault secrets into environment variables for u
 
 ```bash
 docker run \
-	--rm \
-	-e VAULT_ADDR="https://vault.my-domain.com:8200" \
-	-e VAULT_TOKEN="<token>" \
-	-e SECRET_CONFIG="<configuration (see below)>" \
-	readytalk/vault-to-envs:latest
+  --rm \
+  -e VAULT_ADDR="https://vault.my-domain.com:8200" \
+  -e VAULT_TOKEN="<token>" \
+  -e SECRET_CONFIG="<configuration (see below)>" \
+  readytalk/vault-to-envs:latest
 ```
 
 Will output, as an example:
@@ -63,31 +63,31 @@ Take an example where we have two secrets.  The first contains 3 keys with datab
 `secret_config.json`
 ```json
 [
-	{
-		"vault_path": "secret/app/database",
-		"set": {
-			"DB_HOST": "dbHost",
-			"DB_USER": "dbUser",
-			"DB_PASSWORD": "dbPass"
-		}
-	},
-	{
-		"vault_path": "secret/app/token",
-		"set":  {
-			"APP_TOKEN": "token"
-		}
-	}
+  {
+    "vault_path": "secret/app/database",
+    "set": {
+      "DB_HOST": "dbHost",
+      "DB_USER": "dbUser",
+      "DB_PASSWORD": "dbPass"
+    }
+  },
+  {
+    "vault_path": "secret/app/token",
+    "set":  {
+      "APP_TOKEN": "token"
+    }
+  }
 ]
 ```
 
 Command
 ```bash
 docker run \
-	--rm \
-	-e VAULT_ADDR="https://vault.my-domain.com:8200" \
-	-e VAULT_TOKEN="<token>" \
-	-e SECRET_CONFIG="$(cat secret_config.json)" \
-	readytalk/vault-to-envs:latest
+  --rm \
+  -e VAULT_ADDR="https://vault.my-domain.com:8200" \
+  -e VAULT_TOKEN="<token>" \
+  -e SECRET_CONFIG="$(cat secret_config.json)" \
+  readytalk/vault-to-envs:latest
 ```
 
 Output
@@ -104,25 +104,25 @@ This example uses [Vault's AWS Secret Backend](https://www.vaultproject.io/docs/
 `secret_config.json`
 ```json
 [
-	{
-		"vault_path": "aws/creds/my-role",
-		"ttl": 600,
-		"set": {
-		  "AWS_ACCESS_KEY_ID": "access_key",
-		  "AWS_SECRET_ACCESS_KEY": "secret_key"
-		}
-	}
+  {
+    "vault_path": "aws/creds/my-role",
+    "ttl": 600,
+    "set": {
+      "AWS_ACCESS_KEY_ID": "access_key",
+      "AWS_SECRET_ACCESS_KEY": "secret_key"
+    }
+  }
 ]
 ```
 
 Command
 ```bash
 docker run \
-	--rm \
-	-e VAULT_ADDR="https://vault.my-domain.com:8200" \
-	-e VAULT_TOKEN="<token>" \
-	-e SECRET_CONFIG="$(cat secret_config.json)" \
-	readytalk/vault-to-envs:latest
+  --rm \
+  -e VAULT_ADDR="https://vault.my-domain.com:8200" \
+  -e VAULT_TOKEN="<token>" \
+  -e SECRET_CONFIG="$(cat secret_config.json)" \
+  readytalk/vault-to-envs:latest
 ```
 
 Output
@@ -136,9 +136,9 @@ One way to source the output of the container is to simply eval the `docker run`
 
 ```
 eval $(docker run \
-	--rm \
-	-e VAULT_ADDR="https://vault.my-domain.com:8200" \
-	-e VAULT_TOKEN="<token>" \
-	-e SECRET_CONFIG="<configuration (see below)>" \
-	readytalk/vault-to-envs)"
+  --rm \
+  -e VAULT_ADDR="https://vault.my-domain.com:8200" \
+  -e VAULT_TOKEN="<token>" \
+  -e SECRET_CONFIG="<configuration (see below)>" \
+  readytalk/vault-to-envs)"
 ```
