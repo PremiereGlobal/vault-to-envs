@@ -5,7 +5,7 @@ import (
   "encoding/json"
   "regexp"
   "strings"
-	log "github.com/Sirupsen/logrus"
+  log "github.com/Sirupsen/logrus"
   envconfig "github.com/kelseyhightower/envconfig"
   VaultApi "github.com/hashicorp/vault/api"
 )
@@ -72,16 +72,16 @@ func main() {
   // Unmarshal the SECRET_CONFIG json
   var f interface{}
   err = json.Unmarshal([]byte(spec.Secret_Config), &f)
-	if err != nil {
-		log.Fatal("Error parsing SECRET_CONFIG: ", err)
-	}
+  if err != nil {
+  log.Fatal("Error parsing SECRET_CONFIG: ", err)
+  }
 
   // Iterate over the top level array to get mappings
-	jsonItems := f.([]interface{})
+  jsonItems := f.([]interface{})
   for _, v := range jsonItems {
 
-		// Use type assertions to ensure that the value is a JSON object
-		switch jsonItems := v.(type) {
+  // Use type assertions to ensure that the value is a JSON object
+  switch jsonItems := v.(type) {
 
   		// The value is an configItem, represented as a generic interface
   		case interface{}:
@@ -172,7 +172,7 @@ func main() {
   		default:
   			log.Fatal("SECRET_CONFIG structure invalid")
   	}
-	}
+  }
 
   log.Debug("secretConfig", secretConfig)
 
