@@ -188,6 +188,9 @@ func main() {
 
   // If any of the secrets are AWS keys, wait for them to become active
   mountOutput, err := VaultSys.ListMounts()
+  if err != nil {
+    log.Fatal("Error fetching mounts: ", err.Error())
+  }
 
   // Loop through secretItems and, if the mount has type aws, wait for AWS credentials to become active
   // TODO: Could probably do this in some sort of multithread manner
