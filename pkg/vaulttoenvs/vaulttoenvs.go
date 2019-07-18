@@ -125,7 +125,7 @@ func (v *VaultToEnvs) loadSecrets() error {
 			return fmt.Errorf("Failed to parse secret config field %s: %v", terr.Field, terr)
 		}
 
-    return fmt.Errorf("Error parsing secret config: %v", err)
+		return fmt.Errorf("Error parsing secret config: %v", err)
 	}
 
 	// Retrieve the secrets from Vault
@@ -403,7 +403,7 @@ func (v *VaultToEnvs) waitForAwsCredsToActivate(secretItem *SecretItem) error {
 				return err
 			}
 
-      return fmt.Errorf("Error validating AWS credentials: %s", err.Error())
+			return fmt.Errorf("Error validating AWS credentials: %s", err.Error())
 		}
 
 		v.log.Info("AWS credentials (", accessKey, ") from ", secretItem.SecretPath, " active")
