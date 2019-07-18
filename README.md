@@ -1,7 +1,5 @@
 # Vault to Env [![Build Status](https://travis-ci.org/PremiereGlobal/vault-to-envs.svg?branch=master)](https://travis-ci.org/PremiereGlobal/vault-to-envs) [![GoDoc](https://godoc.org/github.com/PremiereGlobal/vault-to-envs?status.png)](https://godoc.org/github.com/PremiereGlobal/vault-to-envs/pkg/vaulttoenvs) [![Go Report Card](https://goreportcard.com/badge/github.com/PremiereGlobal/vault-to-envs)](https://goreportcard.com/report/github.com/PremiereGlobal/vault-to-envs) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/PremiereGlobal/vault-to-envs/blob/master/LICENSE) 
 
-https://travis-ci.org/PremiereGlobal/vault-to-envs.svg?branch=master
-
 A Docker container for extracting Vault secrets into environment variables for use in deploys or development.
 
 ## Prerequisites
