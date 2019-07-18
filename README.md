@@ -1,24 +1,11 @@
-# Extracting Vault Secrets into Environment Variables
+# Vault to Env [![GoDoc](https://godoc.org/github.com/PremiereGlobal/vault-to-envs?status.png)](http://godoc.org/github.com/PremiereGlobal/vault-to-envs) [![Go Report Card](https://goreportcard.com/badge/github.com/PremiereGlobal/vault-to-envs)](https://goreportcard.com/report/github.com/PremiereGlobal/vault-to-envs) [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/PremiereGlobal/vault-to-envs/blob/master/LICENSE)
 
 A Docker container for extracting Vault secrets into environment variables for use in deploys or development.
-
-<!-- TOC depthFrom:2 depthTo:6 withLinks:1 updateOnSave:1 orderedList:0 -->
-
-- [Prerequisites](#prerequisites)
-- [Basic Usage](#basic-usage)
-- [Docker Environment Variables](#docker-environment-variables)
-- [Configuration](#configuration)
-  - [Examples](#examples)
-    - [Simple Secrets](#simple-secrets)
-    - [Dynamic Secrets](#dynamic-secrets)
-- [Sourcing the Env Vars](#sourcing-the-env-vars)
-
-<!-- /TOC -->
 
 ## Prerequisites
 
 * A Vault instance
- * A Valid Authentication Token
+* A Valid Authentication Token
 
 ## Basic Usage
 
@@ -27,11 +14,11 @@ docker run \
   --rm \
   -e VAULT_ADDR="https://vault.my-domain.com:8200" \
   -e VAULT_TOKEN="<token>" \
-  -e SECRET_CONFIG="<configuration (see below)>" \
-  readytalk/vault-to-envs:latest
+  -e SECRET_CONFIG_FILE="./secrets.json"
+  premiereglobal/vault-to-envs:latest
 ```
 
-Will output, as an example:
+Output:
 
 ```bash
 export DB_PASSWORD=abc123
@@ -49,15 +36,16 @@ of this parameter has the format `<VARIABLE_NAME>=<VALUE>`.
 |----------------|----------------------------------------------|---------|
 |`VAULT_ADDR`| The full address of the instance of vault to connect to. For example `https://vault.my-domain.com:8200` | required |
 |`VAULT_TOKEN`| Vault token to use for authentication. | required |
-|`SECRET_CONFIG`| Definition of which secrets/keys to extract and what environment variables to set them to. See below for more details. | required |
+|`SECRET_CONFIG`| Definition of which secrets/keys to extract and what environment variables to set them to. See below for more details. | required if `SECRET_CONFIG_FILE` not set |
+|`SECRET_CONFIG_FILE`| Location of a secret config file. | required if `SECRET_CONFIG` not set |
 |`DEBUG`| Set to `true` to output verbose details during execution | `false` |
 
 ## Configuration
-This container is configured with the `SECRET_CONFIG` environment variable which is a JSON formatted set of settings that determine which secrets get extracted from Vault.
+This container is configured with a JSON formatted string or file (`SECRET_CONFIG` or `SECRET_CONFIG_FILE`) which describes the secrets, env variables, ttl and versions to extract.
 
 ### Examples
 
-#### Simple Secrets
+#### Key-Value Secrets
 Take an example where we have two secrets.  The first contains 3 keys with database information.  The second contains some type of token.
 
 `secret_config.json`
@@ -84,10 +72,11 @@ Command
 ```bash
 docker run \
   --rm \
+  -v $(pwd):/config \
   -e VAULT_ADDR="https://vault.my-domain.com:8200" \
   -e VAULT_TOKEN="<token>" \
-  -e SECRET_CONFIG="$(cat secret_config.json)" \
-  readytalk/vault-to-envs:latest
+  -e SECRET_CONFIG_FILE=/config/secret_config.json \
+  premiereglobal/vault-to-envs:latest
 ```
 
 Output
@@ -122,14 +111,53 @@ docker run \
   -e VAULT_ADDR="https://vault.my-domain.com:8200" \
   -e VAULT_TOKEN="<token>" \
   -e SECRET_CONFIG="$(cat secret_config.json)" \
-  readytalk/vault-to-envs:latest
+  premiereglobal/vault-to-envs:latest
 ```
 
 Output
 ```
-export AWS_SECRET_ACCESS_KEY='xxxxxxxxxxxxxxxxxxxxxxxxx'
 export AWS_ACCESS_KEY_ID='xxxxxxxxxxxxxxxxxx'
+export AWS_SECRET_ACCESS_KEY='xxxxxxxxxxxxxxxxxxxxxxxxx'
 ```
+
+#### Key-Value (Version 2) Secrets
+This example pulls secrets from [Vault's KV V2](https://www.vaultproject.io/docs/secrets/kv/kv-v2.html) data store.  With kv-v2, an additional option for version can be specified.
+
+`secret_config.json`
+```json
+[
+  {
+    "vault_path": "kv/app/database",
+    "version": 5,
+    "set": {
+      "DB_HOST": "dbHost",
+      "DB_USER": "dbUser",
+      "DB_PASSWORD": "dbPass"
+    }
+  }
+]
+```
+
+The config above will pull version 5 of the secret specified.
+
+Additionally, a negative value can be specified for version to "go back" a number of version.  For example:
+
+`secret_config.json`
+```json
+[
+  {
+    "vault_path": "kv/app/database",
+    "version": -2,
+    "set": {
+      "DB_HOST": "dbHost",
+      "DB_USER": "dbUser",
+      "DB_PASSWORD": "dbPass"
+    }
+  }
+]
+```
+
+This will pull the secrets 2 version behind the current version. Note: any deleted version will be skipped over and the next non-deleted secret will be considered.
 
 ## Sourcing the Env Vars
 One way to source the output of the container is to simply eval the `docker run` output. If a successful run occurs the stdout will be evaluated and the environment variables set.
@@ -137,8 +165,9 @@ One way to source the output of the container is to simply eval the `docker run`
 ```
 eval $(docker run \
   --rm \
+  -v $(pwd):/config \
   -e VAULT_ADDR="https://vault.my-domain.com:8200" \
   -e VAULT_TOKEN="<token>" \
-  -e SECRET_CONFIG="<configuration (see below)>" \
-  readytalk/vault-to-envs)"
+  -e SECRET_CONFIG_FILE=/config/secret_config.json \
+  premiereglobal/vault-to-envs)"
 ```
