@@ -1,10 +1,12 @@
 FROM golang:1.12 as builder
 
+ARG GOOS=linux
+
 WORKDIR /src
 
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -v -a -mod vendor -o v2e .
+RUN CGO_ENABLED=0 GOOS=${GOOS} go build -v -a -mod vendor -o v2e .
 
 # Stage 2
 

@@ -1,0 +1,29 @@
+sudo: required
+language: minimal
+services:
+- docker
+script:
+- scripts/build.sh ${TRAVIS_BRANCH} linux
+- scripts/build.sh ${TRAVIS_BRANCH} darwin
+deploy:
+- provider: releases
+  api_key:
+    secure: qDS2JcikJK3lKIgCm4gjTc3XzEs5wZke+2kOXUhTsazJEb0O+LIJ98MT2RwQ3AeyuLVgqVUX14X3HsfoSaIok0c//zKmDrXqpdHlv/micG8TnpVoNyydQtLbqcm0EAJQHc6cpgmLovuudRV75myDRElYwV2gquZBfEKBddjXJtLTLZUMfBIKJb0IU0ScH+7Tra8NqQOzOm16Wk1VZMq5YDYCbG/fyJ1DrHhohLavrBHOAado97P5gXaIKR9RNnINCYyg0yWdNBggR/NkknOeotIJeoG+LnfLMJ/xnuwt0Oq4grsmx8M83mLjFm7jGpmTOmobVXEU19WgKNoJ5lec44sdzepbPzbYl5XOzWVaR5gm0DXa9XNXglnLzwEulomP5VTvXoTYBUbF7V5k+vKM0+ApwReFIFJ+/eBerGAy/zr2zTNx93bhSv3AYcdPkl1zRraQJJr0v6qXq/LvFdrCIjMq8uqdymIuStRiQCizUQYhPn4Donb3F6DJ4D7+FCbfDgS6DGZN9ye3fXUDElg+dvjNjAbNauoeXCwye3sRcQRGvvENkbcFIZLFPs/NJqmijrHrhX6LVy9s69YYtZrgqKvqNMYdMWvUi/Ut3wOSb/g3/7pP+wkAAHQyH0XmFmbeZc/NlWA73+0HCaMxH0z0IpegwVvRdxiDUEo06gE5axw=
+  file_glob: true
+  file:
+  - bin/*.tar.gz
+  skip_cleanup: true
+  on:
+    tags: true
+- provider: script
+  script: bash scripts/publish_docker.sh ${TRAVIS_BRANCH}
+  on:
+    tags: true
+- provider: script
+  script: bash scripts/publish_docker.sh ${TRAVIS_BRANCH} latest
+  on:
+    branch: master
+env:
+  global:
+  - secure: InoQHkctAlgqbrUHw6qLUGAnccvZF1F+yITQh6CyFsew2RJvG42cOOdfTrFLWsAZW2yK53zKdXbf+2ESTsY0Lyych1mVvSqz5seue4J10yWrx0//wo/qKl7L4P3akMVdiJ6FIFbpIvfLekJcIRZzrz39G9ule1E7D1UEV+/NYzbdawiz5bpYa7TKLWzmXhYWXV/OWnNuwrCOlRoXnyfu9S1lkQtEju8c/EJ2gmp0Q06FX9WliW8aHcvR04a8ODy5P7MaebdA4Z2/JhfCb0eCq5xdGbEt1c7PTATtFTuotdd0yLahIvyZIC8Fv25X0q0oIhsfThyi3froFX1+bHCqbuhmIiFEVpEyBBWWFd/6CmlH2xoEb+jA/KgOVu4n0j8KvJlI3B+gL80rlYTiV/mCr4s8ZSHMU/W3Kb3HioPwA0jR6WxyWdbYVS7llqHVk3IqPHqNS0PVEmX+7QSsQfg4GqRfOCmwbeDfXegUQrU1pGHPEj54kRCfsusXf63sMEa07rlONkiKDQYoNvvzExGhraK3ASom4JW/vx/P9H4wTRFw3tU6t/i53gc6+YMfFSuRYKrrnD9itLtXCR03zrAJvmscwN/NWxu5kHsK/xGgTmkxVONJWH3KH0q9d1zNrZko6fWZF2eFTJ27ETpgYQi37wnutv3U85AhHTgWORxaeOM=
+  - secure: tpRGtnG3mjXJ2AKRri/OFE6J61VV76Iktizw4cSZyAJ5Svy4uHOhqJPk//fRj7YSq7hohyS7fhO97UbPiBWOeoUgkf062EyNNT5V34EEAZ6KY/JMAdNBTJSLhvkMVAdcG8R+n7lEbphq3g1BIRu67aCnSvhJ+zaYBmU+d2QOOYIMvlsInUmrEWsUws+QYurMM4tx463CsNw6mSOhjscEFMiHH8c9l9CkwySUoJXelOoES77N63rd7VYTEFugDEjL18d06iQgTg9c9GY3VJGFQ+wZXfu+thRdifjG5QyO5qWzZSmp+72LtdrD10f1r4UQLCufFH7Cq2ioBsbPBFT5thAJ8KcdF6PqEYXhbjsAQcXZDipn8bfKgT8xj5o8OuYa6N4ADPKrjFA7KE4lq8yuV1svXMlMDZbyc9/qiaU7r/f2SWp2BcWHccjOT3DFLPiXxI0g4nL81m1yAPZtfDELtQTCV0RE76/io8+tuJXkd5ykfUqz/sx45svPbquSw5ikGu/VaEqD0x4DGVwr/BtAaBW0Mg1lNZHkEOf4QOFTNKEzTGy3DjoGc6icQzZu+Vw2dkAn44dl3DhzKJS4vIwGydwtSjDtFpMJOh0BrNLREPcS2kcn4eW7bqse3zKbkcYMiyPJO4fCM79ua8V+5ZPNXyfRCJt3MQVxs864/hxUm0Q=
