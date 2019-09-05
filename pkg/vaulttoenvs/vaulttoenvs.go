@@ -29,10 +29,10 @@ type Logger interface {
 
 // SecretItem holds data about a secret config
 type SecretItem struct {
-	SecretPath         string            `json:"vault_path"`
-	TTL                int               `json:"ttl"`
-	Version            float64           `json:"version"`
-	SecretMaps         map[string]string `json:"set"`
+	SecretPath         string            `json:"vault_path",yaml:"secretPath"`
+	TTL                int               `json:"ttl",yaml:"ttl"`
+	Version            float64           `json:"version",yaml:"version"`
+	SecretMaps         map[string]string `json:"set",yaml:"set"`
 	SecretDataPath     string            // kv v2
 	SecretMetadataPath string            // kv v2
 	EffectiveVersion   int               // kv v2
