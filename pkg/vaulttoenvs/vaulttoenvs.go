@@ -264,22 +264,22 @@ func (v *VaultToEnvs) GetKV2Secret(secretItem *SecretItem) error {
 	// Create the data and metadata paths for the secret
 	pathParts := strings.Split(secretItem.SecretPath, "/")
 	if pathParts[1] != "data" {
-		secretItem.SecretDataPath = path.Join(pathParts[0], "data", strings.Join(pathParts[1:], "/"))
+		secretItem.secretDataPath = path.Join(pathParts[0], "data", strings.Join(pathParts[1:], "/"))
 	} else {
-		secretItem.SecretDataPath = secretItem.SecretPath
+		secretItem.secretDataPath = secretItem.SecretPath
 	}
-	secretItem.SecretMetadataPath = path.Join(pathParts[0], "metadata", strings.Join(pathParts[1:], "/"))
+	secretItem.secretMetadataPath = path.Join(pathParts[0], "metadata", strings.Join(pathParts[1:], "/"))
 
 	// Determine the version to pull
 	if secretItem.Version >= 0 {
-		secretItem.EffectiveVersion = int(secretItem.Version)
+		secretItem.effectiveVersion = int(secretItem.Version)
 	} else {
-		secret, err := v.vaultClient.Logical().Read(secretItem.SecretMetadataPath)
+		secret, err := v.vaultClient.Logical().Read(secretItem.secretMetadataPath)
 		if err != nil {
 			return fmt.Errorf("Error fetching secret: %s", err.Error())
 		}
 		if secret == nil {
-			return fmt.Errorf("Could not get secret metadata %s: Secret does not exist", secretItem.SecretMetadataPath)
+			return fmt.Errorf("Could not get secret metadata %s: Secret does not exist", secretItem.secretMetadataPath)
 		}
 
 		versionResults := secret.Data["versions"].(map[string]interface{})
@@ -320,7 +320,7 @@ func (v *VaultToEnvs) GetKV2Secret(secretItem *SecretItem) error {
 				i = i - 1
 				v.log.Warn(fmt.Sprintf("Version %d of secret %s has been deleted, checking next version...", currentVersion, secretItem.SecretPath))
 			} else {
-				secretItem.EffectiveVersion = currentVersion
+				secretItem.effectiveVersion = currentVersion
 				done = true
 			}
 		}
@@ -328,9 +328,9 @@ func (v *VaultToEnvs) GetKV2Secret(secretItem *SecretItem) error {
 
 	// Read the secret from Vault
 	secretData := make(map[string][]string)
-	secretData["version"] = []string{strconv.Itoa(secretItem.EffectiveVersion)}
-	v.log.Info(fmt.Sprintf("Fetching secret %s: version %d", secretItem.SecretPath, secretItem.EffectiveVersion))
-	secret, err := v.vaultClient.Logical().ReadWithData(secretItem.SecretDataPath, secretData)
+	secretData["version"] = []string{strconv.Itoa(secretItem.effectiveVersion)}
+	v.log.Info(fmt.Sprintf("Fetching secret %s: version %d", secretItem.SecretPath, secretItem.effectiveVersion))
+	secret, err := v.vaultClient.Logical().ReadWithData(secretItem.secretDataPath, secretData)
 	if err != nil {
 		return fmt.Errorf("Error fetching secret: %s", err.Error())
 	}
