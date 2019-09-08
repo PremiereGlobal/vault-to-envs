@@ -33,9 +33,9 @@ type SecretItem struct {
 	TTL                int               `json:"ttl" yaml:"ttl"`
 	Version            float64           `json:"version" yaml:"version"`
 	SecretMaps         map[string]string `json:"set" yaml:"set"`
-	SecretDataPath     string            // kv v2
-	SecretMetadataPath string            // kv v2
-	EffectiveVersion   int               // kv v2
+	secretDataPath     string            // kv v2
+	secretMetadataPath string            // kv v2
+	effectiveVersion   int               // kv v2
 	secretMapValues    map[string]string
 	secret             *VaultApi.Secret
 	mount              *VaultApi.MountOutput
