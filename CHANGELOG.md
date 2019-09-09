@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.1
+* Updating package library with YAML struct tagging
+
 ## v0.2.0
 * Added support for kv (version 2)
   * Added support for pulling previous secret versions
