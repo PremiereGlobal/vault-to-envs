@@ -78,7 +78,7 @@ func (v *VaultToEnvs) SetVaultToken(token string) {
 	v.config.vaultToken = token
 }
 
-func (v *VaultToEnvs) AddSecretConfigs(items ...*SecretItem) {
+func (v *VaultToEnvs) AddSecretItems(items ...*SecretItem) {
 	v.secretItems = append(v.secretItems, items...)
 }
 
