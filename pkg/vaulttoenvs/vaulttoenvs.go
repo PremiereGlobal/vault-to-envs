@@ -256,6 +256,26 @@ func (v *VaultToEnvs) DisplayEnvExports() error {
 	return nil
 }
 
+// GetEnvs returns the secret environment variables as a slice
+func (v *VaultToEnvs) GetEnvs() ([]string, error) {
+	err := v.loadSecrets()
+	if err != nil {
+		return nil, err
+	}
+
+	result := []string{}
+
+	for _, secretItem := range v.secretItems {
+		for envName, secretValue := range secretItem.secretMapValues {
+
+			// Single quotes value and escapes single quotes in secret with '"'"'
+			result = append(result, fmt.Sprintf("%s=%s", envName, strings.Replace(secretValue, "'", "'\"'\"'", -1)))
+		}
+	}
+
+	return result, nil
+}
+
 // GetKV2Secret gets a key-value (version 2) secret
 // Uses the `version` option to select the desired version.  This can be negative to go back x versions or positive to indicate
 // the actual secret version

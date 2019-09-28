@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.2 (unreleased)
+* Updating package library with GetEnv method
+
 ## v0.2.1
 * Updating package library with YAML struct tagging
 
