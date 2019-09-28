@@ -78,6 +78,10 @@ func (v *VaultToEnvs) SetVaultToken(token string) {
 	v.config.vaultToken = token
 }
 
+func (v *VaultToEnvs) AddSecretConfigs(items ...*SecretItem) {
+	v.secretItems = append(v.secretItems, items...)
+}
+
 func (v *VaultToEnvs) loadSecrets() error {
 
 	var err error
@@ -114,22 +118,25 @@ func (v *VaultToEnvs) loadSecrets() error {
 		if err != nil {
 			return fmt.Errorf("Error reading config file '%s': %v", v.config.SecretConfigFile, err)
 		}
-	} else {
+	} else if v.config.SecretConfig != "" {
 		secretConfigData = []byte(v.config.SecretConfig)
 	}
 
-	var secretItems []*SecretItem
-	err = json.Unmarshal(secretConfigData, &secretItems)
-	if err != nil {
-		if terr, ok := err.(*json.UnmarshalTypeError); ok {
-			return fmt.Errorf("Failed to parse secret config field %s: %v", terr.Field, terr)
-		}
+	if secretConfigData != nil {
+		var secretItems []*SecretItem
+		err = json.Unmarshal(secretConfigData, &secretItems)
+		if err != nil {
+			if terr, ok := err.(*json.UnmarshalTypeError); ok {
+				return fmt.Errorf("Failed to parse secret config field %s: %v", terr.Field, terr)
+			}
 
-		return fmt.Errorf("Error parsing secret config: %v", err)
+			return fmt.Errorf("Error parsing secret config: %v", err)
+		}
+		v.secretItems = append(v.secretItems, secretItems...)
 	}
 
 	// Retrieve the secrets from Vault
-	for i, secretItem := range secretItems {
+	for i, secretItem := range v.secretItems {
 
 		if secretItem.SecretPath == "" {
 			return fmt.Errorf("Error: secret_path not specified in secret config for item %d", i+1)
@@ -150,7 +157,7 @@ func (v *VaultToEnvs) loadSecrets() error {
 
 	// Loop through secretItems and, if the mount has type aws, wait for AWS credentials to become active
 	// TODO: Could probably do this in some sort of multithread manner
-	for _, secretItem := range secretItems {
+	for _, secretItem := range v.secretItems {
 		if secretItem.mount.Type == "aws" {
 			err := v.waitForAwsCredsToActivate(secretItem)
 			if err != nil {
@@ -158,8 +165,6 @@ func (v *VaultToEnvs) loadSecrets() error {
 			}
 		}
 	}
-
-	v.secretItems = secretItems
 
 	// TODO: Zero out the secret from memory
 	// TODO: Revoke dynamic secrets on failure
